@@ -8,8 +8,8 @@ namespace Personagens {
         forca(rand() % 10 + 1),
         pJogador(nullptr),
         cooldownTiro(COOLDOWN_TIRO_CHEFE),
-        PROJETIL_VELOCIDADE_CHEFE(1.2f + 0.03f * (float)forca), //alterei pra exibir
-        COOLDOWN_TIRO_CHEFE(540 - 60 / forca),
+        PROJETIL_VELOCIDADE_CHEFE(1.2f + 0.06f * (float)forca), //alterei pra exibir
+        COOLDOWN_TIRO_CHEFE(540 - 120 / forca),
         FORCA_GRAVIDADE_CHEFE(-0.0249f)
     {
         this->x = xi;
@@ -19,7 +19,7 @@ namespace Personagens {
 
         if (pGG)
         {
-            sf::Texture* tex = pGG->getTextura("C:/testegitjogo/testegitjogo-main/Imagens/chefe.png");
+            sf::Texture* tex = pGG->getTextura("Imagens/chefe.png");
             if (tex)
             {
                 pFigura->setTexture(*tex);
@@ -28,7 +28,7 @@ namespace Personagens {
         }
         else
         {
-            std::cerr << "Erro: Gerenciador Grafico nao setado para Robo_CEO!" << std::endl;
+            std::cerr << "Erro RoboCEO" << std::endl;
         }
 
         pFigura->setPosition(this->x, this->y);

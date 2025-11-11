@@ -16,7 +16,7 @@ namespace Obstaculos
         }
         else
         {
-            std::cerr << "Erro: Gerenciador Grafico nao setado para Gelinho!" << std::endl;
+            std::cerr << "Erro" << std::endl;
         }
 
         this->x = xi;

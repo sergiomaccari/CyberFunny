@@ -23,10 +23,13 @@ namespace Personagens {
         }
         else
         {
-            std::cerr << "Erro: Gerenciador Grafico nao setado para Robo_Senior!" << std::endl;
+            std::cerr << "Erro RoboSenior" << std::endl;
         }
 
         pFigura->setPosition(sf::Vector2f(this->x, this->y));
+
+        this->intervaloCura = sf::seconds(15.0f - ((float)(this->tamanho - 42) / 11.0f * 5.0f));//vai de 15 a 10 segundos
+        this->tempoCura.restart();
     }
 
     Robo_Senior::~Robo_Senior()
@@ -80,5 +83,12 @@ namespace Personagens {
     void Robo_Senior::executar()
     {
         this->mover();
+        if (tempoCura.getElapsedTime() > intervaloCura)
+        {
+			if (this->n_vidas < 2){//PRESUMINDO QUE N VIDAS MENOR QUE 2, A CONSTANTE QUE LIMITE É A VIDA TOTAL
+				Personagem::operator++();
+			}
+            tempoCura.restart();
+        }
     }
 }

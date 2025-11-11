@@ -5,10 +5,9 @@ namespace Personagens{
     class Robo_Junior : public Inimigo
     {
     protected:
-        int volta = 1; // colocar bool e inicializar em outro lugar.
-		float xINI; // posição inicial do inimigo?????????????
+        int volta = 1;
+		float xINI;
         float raio;
-        int ALCANCE;
 
     public:
          Robo_Junior(float xi, float yi);

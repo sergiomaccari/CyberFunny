@@ -31,7 +31,7 @@ Jogo::~Jogo()
         pJogador2 = nullptr;
     }
 
-	std::cout << "Jogo finalizado." << std::endl;
+	std::cout << "Jogo encerrado" << std::endl;
 
 }
 
@@ -89,7 +89,7 @@ void Jogo::executar()
 
             if (pJogador2->getAtivo() == false && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-                std::cout << "Jogador 2 entrou!" << std::endl;
+                std::cout << "Jogador 2 spawnnado" << std::endl;
 
                 pJogador2->setAtivo(true);
                 pJogador2->setX(100.0f);

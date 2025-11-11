@@ -13,10 +13,15 @@
 #include <string>        
 #include <iostream>      
 #include <filesystem>
+
+//estudar possibilidade e como colcoar macros como constantes em classes 
+
 #define ALTURA_TELA 900
 #define LARGURA_TELA 1600
-#define LARGURA_CHAO 32.0f
-#define ALTURA_CHAO 32.0f 
+#define MUNDO_X_MIN 0
+#define MUNDO_X_MAX 3200
+#define MUNDO_Y_MIN 0
+#define MUNDO_Y_MAX 900
 
 class Ente;
 

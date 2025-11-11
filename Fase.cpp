@@ -14,11 +14,12 @@ namespace Fases {
 		pJogador2(jogador2),
 		pListaInimigos(nullptr),
 		pListaObstaculos(nullptr),
+		pListaChao(nullptr),
 		pColisoes(nullptr)
 	{
 		if (pJogador1) {
-			pJogador1->setX(50.0f);
-			pJogador1->setY(450.0f);
+			pJogador1->setX(3000.0f);
+			pJogador1->setY(120.0f);
 			pJogador1->setPosicaoGrafica(pJogador1->getX(), pJogador1->getY());
 			pJogador1->setAtivo(true);
 		}
@@ -31,6 +32,7 @@ namespace Fases {
 
 		pListaInimigos = new ListaEntidades();
 		pListaObstaculos = new ListaEntidades();
+		pListaChao = new ListaEntidades();
 
 		pColisoes = new Gerenciador_Colisoes(pJogador1);
 
@@ -54,23 +56,40 @@ namespace Fases {
 
 	void Fase::executar()
 	{
-		if (pJogador1)
+		if (pJogador1) 
+		{
 			pJogador1->executar();
+		}
+
 
 		if (pJogador2)
+		{
 			pJogador2->executar();
+		}
+			
 
-		if (pListaInimigos)
+		if (pListaInimigos) 
+		{
 			pListaInimigos->executar();
+		}
+			
 
-		if (pListaObstaculos)
+		if (pListaObstaculos) {
 			pListaObstaculos->executar();
+		}
+
+		
+		if (pListaChao)
+		{
+			pListaChao->executar();
+		}
 
 		if (pColisoes) {
 
 			pColisoes->limparInimigos();
 			pColisoes->limparObstaculos();
 			pColisoes->limparProjeteis();
+			pColisoes->limparChao();
 
 			if (pListaInimigos)
 			{
@@ -95,6 +114,19 @@ namespace Fases {
 						pColisoes->incluirObstaculo(obst);
 					}
 					curO = curO->getProx();
+				}
+			}
+
+			if (pListaChao)
+			{
+				Elemento<Entidades::Entidade>* curC = pListaChao->getPrimeiro();
+				while (curC) {
+					Entidade* pEnt = curC->getInfo();
+					Entidades::Chao* chao = dynamic_cast<Entidades::Chao*>(pEnt);
+					if (chao && chao->getAtivo()) {
+						pColisoes->incluirChao(chao);
+					}
+					curC = curC->getProx();
 				}
 			}
 
@@ -169,6 +201,9 @@ namespace Fases {
 			}
 			desenharMapa();
 			if (pListaObstaculos) pListaObstaculos->desenhar();
+			
+			//chao nao eh desenhado, mapa cuida disso
+
 			if (pJogador1) {
 				if (pJogador1->getAtivo()) pJogador1->desenhar();
 				pJogador1->getProjeteis()->desenhar();
@@ -207,6 +242,10 @@ namespace Fases {
 		if (pListaObstaculos) {
 			delete pListaObstaculos;
 			pListaObstaculos = nullptr;
+		}
+		if (pListaChao) {
+			delete pListaChao;
+			pListaChao = nullptr;
 		}
 		if (pColisoes) {
 			delete pColisoes;
@@ -250,17 +289,17 @@ namespace Fases {
 		Gerenciador_Grafico* pGG_local = Ente::getGerenciadorGrafico();
 		if (!pGG_local) return;
 
-		Obstaculos::Chao* chao = new Obstaculos::Chao(x, y);
+		Entidades::Chao* chao = new Entidades::Chao(x, y);
 		chao->setGerenciadorGrafico(pGG_local);
-		pListaObstaculos->inserir(chao);
+		pListaChao->inserir(chao);
 	}
 
-	void Fase::desenharMapa() 
+	void Fase::desenharMapa()
 	{
-	
+
 	}
-	void Fase::criarMapa() 
+	void Fase::criarMapa()
 	{
-	
+
 	}
 }

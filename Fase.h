@@ -11,14 +11,17 @@ namespace Fases {
 	class Fase : public Ente
 	{
 	protected:
+		sf::Texture texturaTileset;
+		std::vector<std::vector<unsigned int>> gridMapa;
 		Jogador* pJogador1;
 		Jogador* pJogador2;
 		ListaEntidades* pListaInimigos;
 		ListaEntidades* pListaObstaculos;
+		ListaEntidades* pListaChao;
 		Gerenciador_Colisoes* pColisoes;
 		std::vector<sf::Vector2f> posi_robo_junior;
 		std::vector<sf::Vector2f> posi_plataforma;
-		const int TILESET_LARGURA_EM_BLOCOS = 8;
+		const int TILESET_LARGURA_EM_BLOCOS = 8;//pq cacete é 8
 		const float TAMANHO_BLOCO_X = 32.0f;
 		const float TAMANHO_BLOCO_Y = 32.0f;
 		void criarRoboJunior(float x, float y);

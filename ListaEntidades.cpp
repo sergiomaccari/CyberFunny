@@ -3,7 +3,7 @@
 #include "Projetil.h" 
 #include "Lista.h" 
 #include "Obstaculo.h"
-
+#include "Chao.h"
 using namespace Entidades;
 
 
@@ -76,9 +76,8 @@ void ListaEntidades::desenhar()
         if (pEnt && pEnt->getAtivo())
         {
             Obstaculos::Obstaculo* pObs = dynamic_cast<Obstaculos::Obstaculo*>(pEnt);
-
-         
-            if (!pObs || pObs->getMovel())
+            Entidades::Chao* pChao = dynamic_cast<Entidades::Chao*>(pEnt);
+            if ((!pObs && !pChao) || (pObs && pObs->getMovel()))
             {
                 pEnt->desenhar();
             }

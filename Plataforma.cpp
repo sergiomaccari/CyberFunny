@@ -13,7 +13,7 @@ namespace Obstaculos {
     {
         if (pGG)
         {
-            sf::Texture* tex = pGG->getTextura("C:/testegitjogo/testegitjogo-main/Imagens/plataforma.png");
+            sf::Texture* tex = pGG->getTextura("Imagens/plataforma.png");
             if (tex)
             {
                 pFigura->setTexture(*tex);
@@ -22,7 +22,7 @@ namespace Obstaculos {
         }
         else
         {
-            std::cerr << "Erro: Gerenciador Grafico nao setado para Plataforma!" << std::endl;
+            std::cerr << "Erro Plataforma" << std::endl;
         }
 
 

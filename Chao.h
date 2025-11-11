@@ -1,15 +1,20 @@
 #pragma once
-#include "Obstaculo.h"
+#include "Entidade.h"
+#include <fstream> 
+#include <string>  
 
-using namespace Personagens;
+namespace Entidades {
 
-namespace Obstaculos {
-	class Chao : public Obstaculo
+	class Chao : public Entidades::Entidade
 	{
+	private:
+		static const float largura;
+		static const float altura;
+
 	public:
 		Chao(float x, float y);
 		~Chao();
-		void obstaculizar(Jogador* pj);
+
 		void salvar();
 		void executar();
 	};

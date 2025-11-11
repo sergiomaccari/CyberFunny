@@ -20,7 +20,7 @@ namespace Obstaculos {
 		}
 		else
 		{
-			std::cerr << "Erro: Gerenciador Grafico nao setado para Choquinho!" << std::endl;
+			std::cerr << "Erro Choquinho" << std::endl;
 		}
 
 

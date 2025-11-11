@@ -2,8 +2,8 @@
 #include "Gerenciador_Grafico.h"
 
 namespace Entidades
-{//UTILIZAR DANO
-	Projetil::Projetil() : dano(0), vx(0.0f), vy(0.0f), DoBem(true), FORCA_GRAVIDADE_PROJETIL(-0.0249f) {
+{//TA FALTAND UTILIZAR DANO
+	Projetil::Projetil() : dano(1), vx(0.0f), vy(0.0f), DoBem(true), FORCA_GRAVIDADE_PROJETIL(-0.0249f) {
 
 		if (pGG)
 		{

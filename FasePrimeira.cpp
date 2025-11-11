@@ -71,7 +71,7 @@ namespace Fases {
 
 	void FasePrimeira::criarMapa()
 	{
-		std::ifstream file("tiledcyber3.json");
+		std::ifstream file("tiledcyber3.json");//armazenar futuramente como constante
 		if (!file.is_open()) {
 			std::cerr << "Erro: Nao foi possivel abrir 'tiledcyber3.json'" << std::endl;
 			return;
@@ -164,15 +164,6 @@ namespace Fases {
 		pListaObstaculos->inserir(obst);
 	}
 
-	void FasePrimeira::criarChoquinho(float x, float y)
-	{
-		Gerenciador_Grafico* pGG_local = Ente::getGerenciadorGrafico();
-		if (!pGG_local) return;
-
-		Obstaculos::Choquinho* obst = new Obstaculos::Choquinho(x, y);
-		obst->setGerenciadorGrafico(pGG_local);
-		pListaObstaculos->inserir(obst);
-	}
 
 
 }

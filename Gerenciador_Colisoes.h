@@ -15,6 +15,7 @@ namespace Obstaculos {
 
 namespace Entidades {
 	class Projetil;
+	class Chao;
 }
 
 
@@ -24,20 +25,25 @@ namespace Gerenciadores
 	{
 	private:
 		Personagens::Jogador* p1;
-		Personagens::Jogador* p2; 
+		Personagens::Jogador* p2;
 		std::vector<Personagens::Inimigo*> LIs;
 		std::list<Obstaculos::Obstaculo*> LOs;
+		std::list<Entidades::Chao*> LCs;
 		std::set<Entidades::Projetil*> LPs;
 
 		const bool verificarColisao(Entidade* pe1, Entidade* pe2) const;
 		void tratarColisoesJogsObstacs();
-		void tratarColisoesJogsInimgs();
-		void tratarColisoesJogsProjeteis();
 		void tratarColisoesInimgsObstacs();
-		void tratarColisoesInimgsProjeteis();
-		void tratarColisoesInimgsInimgs();
 		void tratarColisoesProjeteisObstacs();
 		void tratarColisoesObstacsObstacs();
+		void tratarColisoesJogsInimgs();
+		void tratarColisoesJogsProjeteis();
+		void tratarColisoesInimgsProjeteis();
+		void tratarColisoesInimgsInimgs();
+		void tratarColisoesJogsChao();
+		void tratarColisoesInimgsChao();
+		void tratarColisoesProjeteisChao();
+		void tratarColisoesObstacsChao();
 
 
 	public:
@@ -49,10 +55,12 @@ namespace Gerenciadores
 		void incluirInimigo(Personagens::Inimigo* pi);
 		void incluirObstaculo(Obstaculos::Obstaculo* po);
 		void incluirProjetil(Entidades::Projetil* pj);
+		void incluirChao(Entidades::Chao* pc);
 
 		void limparProjeteis();
 		void limparInimigos();
 		void limparObstaculos();
+		void limparChao();
 
 		void executar();
 	};

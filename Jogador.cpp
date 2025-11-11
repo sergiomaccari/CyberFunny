@@ -5,7 +5,7 @@
 using namespace Entidades;
 namespace Personagens
 {
-	const float Jogador::PROJETIL_VELOCIDADE_JOGADOR = 3.0f; //deveria ser no .h acho
+	const float Jogador::PROJETIL_VELOCIDADE_JOGADOR = 3.0f;
 
 	Jogador::Jogador(int numJogador) :
 		pontos(0),
@@ -16,8 +16,8 @@ namespace Personagens
 		stun(sf::Time::Zero), 
 		obstaculoCooldown(sf::Time::Zero) 
 	{
-		this->x = 10;
-		this->y = 10;
+		this->x = 32;//inicializado uma pos padrao nessa construtora
+		this->y = 32;
 		this->velocidade = 300.0f;
 		this->n_vidas = 1000;
 
@@ -34,7 +34,7 @@ namespace Personagens
 		}
 		else
 		{
-			std::cerr << "Erro: Gerenciador Grafico nao setado para Jogador!" << std::endl;
+			std::cerr << "Erro jogador" << std::endl;
 		}
 
 

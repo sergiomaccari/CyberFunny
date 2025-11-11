@@ -22,7 +22,6 @@ namespace Fases {
         }
 
         posi_robo_junior = { {1000, 500}, {1200, 400} };
-        posi_gelinho = { {800, 600}, {900, 600} };
         posi_choquinho = { {1500, 550}, {1600, 550} };
         posi_ceo = { {2000, 400} };
 
@@ -30,26 +29,23 @@ namespace Fases {
         criarInimigos();
     }
 
-    FaseSegunda::~FaseSegunda() {}
+    FaseSegunda::~FaseSegunda() 
+    {
+    
+    }
 
     void FaseSegunda::criarInimigos()
     {
-        for (const auto& pos : posi_robo_junior) {
-            criarRoboJunior(pos.x, pos.y);
-        }
+        criarRoboCEO(3200 - (32*10), 32*9);
+		criarRoboCEO(3200 - (32*9), 32*14);
+        criarRoboCEO(3200 - (32*9), 32*19);
+        criarRoboCEO(3200 - (32*9), 32*24);
 
-        for (const auto& pos : posi_ceo) {
-            criarChefe(pos.x, pos.y);
-        }
     }
 
     void FaseSegunda::criarObstaculos()
     {
         criarMapa();
-
-        for (const auto& pos : posi_gelinho) {
-            criarGelinho(pos.x, pos.y);
-        }
 
         for (const auto& pos : posi_choquinho) {
             criarChoquinho(pos.x, pos.y);
@@ -130,7 +126,7 @@ namespace Fases {
         }
     }
 
-    void FaseSegunda::criarChefe(float x, float y)
+    void FaseSegunda::criarRoboCEO(float x, float y)
     {
         Gerenciador_Grafico* pGG_local = Ente::getGerenciadorGrafico();
         if (!pGG_local) return;
@@ -151,13 +147,5 @@ namespace Fases {
         pListaObstaculos->inserir(obst);
     }
 
-    void FaseSegunda::criarGelinho(float x, float y)
-    {
-        Gerenciador_Grafico* pGG_local = Ente::getGerenciadorGrafico();
-        if (!pGG_local) return;
 
-        Obstaculos::Gelinho* obst = new Obstaculos::Gelinho(x, y);
-        obst->setGerenciadorGrafico(pGG_local);
-        pListaObstaculos->inserir(obst);
-    }
 }

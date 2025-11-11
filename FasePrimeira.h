@@ -9,8 +9,6 @@ namespace Fases {
     class FasePrimeira : public Fase
     {
     private:
-        sf::Texture texturaTileset;
-        std::vector<std::vector<unsigned int>> gridMapa;
         std::vector<sf::Vector2f> posi_robo_senior;
         std::vector<sf::Vector2f> posi_gelinho;
 

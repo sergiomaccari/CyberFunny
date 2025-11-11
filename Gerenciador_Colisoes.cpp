@@ -3,6 +3,7 @@
 #include "Inimigo.h"
 #include "Obstaculo.h"
 #include "Projetil.h" 
+#include "Chao.h"
 
 using namespace Entidades;
 
@@ -18,6 +19,7 @@ namespace Gerenciadores
 		p2 = NULL;
 		LIs.clear();
 		LOs.clear();
+		LCs.clear();
 		LPs.clear();
 	}
 
@@ -39,6 +41,13 @@ namespace Gerenciadores
 			LOs.push_back(po);
 	}
 
+	// NOVA IMPLEMENTACAO
+	void Gerenciador_Colisoes::incluirChao(Entidades::Chao* pc)
+	{
+		if (pc)
+			LCs.push_back(pc);
+	}
+
 	void Gerenciador_Colisoes::incluirProjetil(Entidades::Projetil* pj)
 	{
 		if (pj)
@@ -47,6 +56,7 @@ namespace Gerenciadores
 	void Gerenciador_Colisoes::limparProjeteis() { LPs.clear(); }
 	void Gerenciador_Colisoes::limparInimigos() { LIs.clear(); }
 	void Gerenciador_Colisoes::limparObstaculos() { LOs.clear(); }
+	void Gerenciador_Colisoes::limparChao() { LCs.clear(); }
 
 	const bool Gerenciador_Colisoes::verificarColisao(Entidade* pe1, Entidade* pe2) const
 	{
@@ -74,21 +84,19 @@ namespace Gerenciadores
 					sf::FloatRect intersection;
 					boundsJ.intersects(boundsO, intersection);
 
-					if (intersection.width > intersection.height) { 
-						if (boundsJ.top < boundsO.top) // colisao cima
+					if (intersection.width > intersection.height) {
+						if (boundsJ.top < boundsO.top)
 						{
-							//obst->obstaculizar(p1);
 							p1->setVel_Grav(0);
 							p1->setY(boundsO.top - boundsJ.height);
 						}
 						else
 						{ // colisao baixo
 							p1->setMovimentoY(1.0f);
-							//p1->setVel_Grav(0.025f);
 							p1->setY(boundsO.top + boundsO.height);
 						}
 					}
-					else { // colisão lado
+					else {
 						if (boundsJ.left < boundsO.left)
 						{
 
@@ -119,13 +127,13 @@ namespace Gerenciadores
 					sf::FloatRect intersection;
 					boundsJ.intersects(boundsO, intersection);
 
-					if (intersection.width > intersection.height) { 
-						if (boundsJ.top < boundsO.top) //cima
+					if (intersection.width > intersection.height) {
+						if (boundsJ.top < boundsO.top)
 						{
 							p2->setVel_Grav(0);
 							p2->setY(boundsO.top - boundsJ.height);
 						}
-						else // baixo
+						else
 						{
 							p1->setMovimentoY(2.0f);
 							p2->setY(boundsO.top + boundsO.height);
@@ -133,9 +141,9 @@ namespace Gerenciadores
 					}
 					else { //lado
 
-						if (boundsJ.left < boundsO.left) 
+						if (boundsJ.left < boundsO.left)
 							p2->setX(boundsO.left - boundsJ.width);
-						else 
+						else
 							p2->setX(boundsO.left + boundsO.width);
 
 						p2->setMovimentoY(0);
@@ -188,6 +196,28 @@ namespace Gerenciadores
 		}
 	}
 
+
+	void Gerenciador_Colisoes::tratarColisoesProjeteisObstacs()
+	{
+		auto it_proj = LPs.begin();
+		while (it_proj != LPs.end())
+		{
+			Entidades::Projetil* proj = *it_proj;
+			if (!proj->getAtivo()) { ++it_proj; continue; }
+
+			for (auto it_obst = LOs.begin(); it_obst != LOs.end(); ++it_obst)
+			{
+				Obstaculos::Obstaculo* obst = *it_obst;
+				if (verificarColisao(proj, obst))
+				{
+					proj->setAtivo(false);
+					break;
+				}
+			}
+			++it_proj;
+		}
+	}
+
 	void Gerenciador_Colisoes::tratarColisoesObstacsObstacs()
 	{
 		for (auto it_A = LOs.begin(); it_A != LOs.end(); ++it_A)
@@ -214,7 +244,7 @@ namespace Gerenciadores
 					obstB->setVel_Grav(0);
 
 
-					if (intersection.width > intersection.height) 
+					if (intersection.width > intersection.height)
 					{
 						if (boundsA.top < boundsB.top) //cima
 						{
@@ -299,7 +329,7 @@ namespace Gerenciadores
 		}
 	}
 
-	void Gerenciador_Colisoes::tratarColisoesJogsProjeteis() // mudar coisa aqui
+	void Gerenciador_Colisoes::tratarColisoesJogsProjeteis()
 	{
 		if (p1 && p1->getAtivo())
 		{
@@ -309,7 +339,7 @@ namespace Gerenciadores
 				Entidades::Projetil* proj = *it_proj;
 				if (proj->getAtivo() && !proj->getDoBem() && verificarColisao(p1, proj))
 				{
-					p1->operator--(); //mudar depois para dar mais dano
+					p1->operator--();
 					proj->setAtivo(false);
 				}
 				++it_proj;
@@ -324,7 +354,7 @@ namespace Gerenciadores
 				Entidades::Projetil* proj = *it_proj;
 				if (proj->getAtivo() && !proj->getDoBem() && verificarColisao(p2, proj))
 				{
-					p2->operator--(); //mudar depois para dar mais dano
+					p2->operator--();
 					proj->setAtivo(false);
 				}
 				++it_proj;
@@ -332,7 +362,7 @@ namespace Gerenciadores
 		}
 	}
 
-	void Gerenciador_Colisoes::tratarColisoesInimgsProjeteis() // uma possível solução para o operator++ é colocar que ele recupera 1 de vida à cada projetil que acerta o inimigo
+	void Gerenciador_Colisoes::tratarColisoesInimgsProjeteis()
 	{
 		auto it_proj = LPs.begin();
 		while (it_proj != LPs.end())
@@ -361,27 +391,6 @@ namespace Gerenciadores
 					{
 						++it_inim;
 					}
-				}
-			}
-			++it_proj;
-		}
-	}
-
-	void Gerenciador_Colisoes::tratarColisoesProjeteisObstacs()
-	{
-		auto it_proj = LPs.begin();
-		while (it_proj != LPs.end())
-		{
-			Entidades::Projetil* proj = *it_proj;
-			if (!proj->getAtivo()) { ++it_proj; continue; }
-
-			for (auto it_obst = LOs.begin(); it_obst != LOs.end(); ++it_obst)
-			{
-				Obstaculos::Obstaculo* obst = *it_obst;
-				if (verificarColisao(proj, obst))
-				{
-					proj->setAtivo(false);
-					break;
 				}
 			}
 			++it_proj;
@@ -441,16 +450,206 @@ namespace Gerenciadores
 		}
 	}
 
+	void Gerenciador_Colisoes::tratarColisoesJogsChao()
+	{
+		if (p1 && p1->getFigura() && p1->getAtivo())
+		{
+			sf::FloatRect boundsJ = p1->getFigura()->getGlobalBounds();
+			for (auto it = LCs.begin(); it != LCs.end(); ++it)
+			{
+				Entidades::Chao* chao = *it;
+				if (verificarColisao(p1, chao))
+				{
+					sf::FloatRect boundsC = chao->getFigura()->getGlobalBounds();
+					sf::FloatRect intersection;
+					boundsJ.intersects(boundsC, intersection);
+
+					if (intersection.width > intersection.height) {
+						if (boundsJ.top < boundsC.top)
+						{
+							p1->setVel_Grav(0);
+							p1->setY(boundsC.top - boundsJ.height);
+						}
+						else
+						{
+							p1->setMovimentoY(1.0f);
+							p1->setY(boundsC.top + boundsC.height);
+						}
+					}
+					else {
+						if (boundsJ.left < boundsC.left)
+						{
+							p1->setX(boundsC.left - boundsJ.width);
+						}
+						else
+						{
+							p1->setX(boundsC.left + boundsC.width);
+						}
+						p1->setMovimentoY(0);
+						p1->setVel_Grav(0);
+					}
+					p1->setPosicaoGrafica(p1->getX(), p1->getY());
+				}
+			}
+		}
+
+		if (p2 && p2->getFigura() && p2->getAtivo())
+		{
+			sf::FloatRect boundsJ = p2->getFigura()->getGlobalBounds();
+			for (auto it = LCs.begin(); it != LCs.end(); ++it)
+			{
+				Entidades::Chao* chao = *it;
+				if (verificarColisao(p2, chao))
+				{
+					sf::FloatRect boundsC = chao->getFigura()->getGlobalBounds();
+					sf::FloatRect intersection;
+					boundsJ.intersects(boundsC, intersection);
+
+					if (intersection.width > intersection.height) {
+						if (boundsJ.top < boundsC.top) //cima
+						{
+							p2->setVel_Grav(0);
+							p2->setY(boundsC.top - boundsJ.height);
+						}
+						else // baixo
+						{
+							p1->setMovimentoY(2.0f);
+							p2->setY(boundsC.top + boundsC.height);
+						}
+					}
+					else { //lado
+
+						if (boundsJ.left < boundsC.left)
+							p2->setX(boundsC.left - boundsJ.width);
+						else
+							p2->setX(boundsC.left + boundsC.width);
+
+						p2->setMovimentoY(0);
+						p2->setVel_Grav(0);
+					}
+					p2->setPosicaoGrafica(p2->getX(), p2->getY());
+					// Sem chamada obstaculizar()
+				}
+			}
+		}
+	}
+
+	void Gerenciador_Colisoes::tratarColisoesInimgsChao()
+	{
+		for (auto it_inim = LIs.begin(); it_inim != LIs.end(); ++it_inim)
+		{
+			Personagens::Inimigo* inim = *it_inim;
+			if (inim && inim->getFigura() && inim->getAtivo())
+			{
+				sf::FloatRect boundsI = inim->getFigura()->getGlobalBounds();
+
+				for (auto it_chao = LCs.begin(); it_chao != LCs.end(); ++it_chao)
+				{
+					Entidades::Chao* chao = *it_chao;
+					if (verificarColisao(inim, chao))
+					{
+						sf::FloatRect boundsC = chao->getFigura()->getGlobalBounds();
+						sf::FloatRect intersection;
+						boundsI.intersects(boundsC, intersection);
+						inim->setVel_Grav(0);
+
+						if (intersection.width > intersection.height)
+						{
+							if (boundsI.top < boundsC.top)
+								inim->setY(boundsC.top - boundsI.height);
+							else
+								inim->setY(boundsC.top + boundsC.height);
+						}
+						else
+						{
+							if (boundsI.left < boundsC.left)
+								inim->setX(boundsC.left - boundsI.width);
+							else
+								inim->setX(boundsC.left + boundsC.width);
+						}
+						inim->setPosicaoGrafica(inim->getX(), inim->getY());
+					}
+				}
+			}
+		}
+	}
+
+	void Gerenciador_Colisoes::tratarColisoesProjeteisChao()
+	{
+		auto it_proj = LPs.begin();
+		while (it_proj != LPs.end())
+		{
+			Entidades::Projetil* proj = *it_proj;
+			if (!proj->getAtivo()) { ++it_proj; continue; }
+
+			for (auto it_chao = LCs.begin(); it_chao != LCs.end(); ++it_chao)
+			{
+				Entidades::Chao* chao = *it_chao;
+				if (verificarColisao(proj, chao))
+				{
+					proj->setAtivo(false);
+					break;
+				}
+			}
+			++it_proj;
+		}
+	}
+
+	void Gerenciador_Colisoes::tratarColisoesObstacsChao()
+	{
+		for (auto it_obst = LOs.begin(); it_obst != LOs.end(); ++it_obst)
+		{
+			Obstaculos::Obstaculo* obst = *it_obst;
+			if (obst && obst->getFigura() && obst->getAtivo() && obst->getMovel())
+			{
+				sf::FloatRect boundsO = obst->getFigura()->getGlobalBounds();
+
+				for (auto it_chao = LCs.begin(); it_chao != LCs.end(); ++it_chao)
+				{
+					Entidades::Chao* chao = *it_chao;
+					if (verificarColisao(obst, chao))
+					{
+						sf::FloatRect boundsC = chao->getFigura()->getGlobalBounds();
+						sf::FloatRect intersection;
+						boundsO.intersects(boundsC, intersection);
+						obst->setVel_Grav(0);
+
+						if (intersection.width > intersection.height)
+						{
+							if (boundsO.top < boundsC.top)
+								obst->setY(boundsC.top - boundsO.height);
+							else
+								obst->setY(boundsC.top + boundsC.height);
+						}
+						else
+						{
+							if (boundsO.left < boundsC.left)
+								obst->setX(boundsC.left - boundsO.width);
+							else 
+								obst->setX(boundsC.left + boundsC.width);
+						}
+						obst->setPosicaoGrafica(obst->getX(), obst->getY());
+					}
+				}
+			}
+		}
+	}
+
+
 	void Gerenciador_Colisoes::executar()
 	{
 		//essa ordem da chamada importa
 		tratarColisoesJogsInimgs();
 		tratarColisoesInimgsInimgs();
 		tratarColisoesJogsProjeteis();
-		tratarColisoesProjeteisObstacs();
 		tratarColisoesInimgsProjeteis();
+		tratarColisoesProjeteisObstacs();
+		tratarColisoesProjeteisChao();
 		tratarColisoesObstacsObstacs();
-		tratarColisoesJogsObstacs(); 
+		tratarColisoesJogsChao();
+		tratarColisoesInimgsChao();
+		tratarColisoesObstacsChao();
+		tratarColisoesJogsObstacs();
 		tratarColisoesInimgsObstacs();
 	}
 }
