@@ -1,137 +1,171 @@
 #include "Robo_CEO.h" 
 #include "Projetil.h" 
+#include <cmath>
+#include "Ente.h"
+namespace CyberMetro {
+    namespace Entidades {
+        namespace Personagens {
+            const int Robo_CEO::COOLDOWN_TIRO_CHEFE_FRAMES = 300;
 
-namespace Personagens {
-
-    Robo_CEO::Robo_CEO(float xi, float yi) :
-        Inimigo(xi, yi),
-        forca(rand() % 10 + 1),
-        pJogador(nullptr),
-        cooldownTiro(COOLDOWN_TIRO_CHEFE),
-        PROJETIL_VELOCIDADE_CHEFE(1.2f + 0.06f * (float)forca),
-        COOLDOWN_TIRO_CHEFE(540 - 120 / forca),
-        FORCA_GRAVIDADE_CHEFE(-0.0249f)
-    {
-        this->x = xi;
-        this->y = yi;
-        this->velocidade = 150.0f;
-        this->n_vidas = 10;
-        this->n_vidas_max = 10;
-
-        this->pontosPorMorte = 500;
-
-        if (pGG)
-        {
-            sf::Texture* tex = pGG->getTextura("Imagens/chefe.png");
-            if (tex)
+            Robo_CEO::Robo_CEO(float xi, float yi) :
+                Inimigo(xi, yi),
+                forca(rand() % 10 + 1),
+                pJogador(nullptr),
+                cooldownTiro(0),
+                PROJETIL_VELOCIDADE_CHEFE(1.2f + 0.06f * (float)forca),
+                FORCA_GRAVIDADE_CHEFE(-0.0249f)
             {
-                pFigura->setTexture(*tex);
-                pFigura->setScale(64.0f / tex->getSize().x, 64.0f / tex->getSize().y);
+                cooldownTiro = COOLDOWN_TIRO_CHEFE_FRAMES / 2; // meio cooldown
+
+                this->x = xi;
+                this->y = yi;
+                this->velocidade = 150.0f;
+                this->n_vidas = 10000;
+                this->n_vidas_max = 10000;
+
+                this->pontosPorMorte = 500;
+
+                if (pGG)
+                {
+                    sf::Texture* tex = pGG->getTextura("Imagens/chefe.png");
+                    if (tex)
+                    {
+                        pFigura->setTexture(*tex);
+                        pFigura->setScale(64.0f / tex->getSize().x, 64.0f / tex->getSize().y);
+                    }
+                }
+                else
+                {
+                    std::cerr << "Erro RoboCEO" << std::endl;
+                }
+
+                pFigura->setPosition(this->x, this->y);
+                atualizarBarraVida();
+            }
+
+            Robo_CEO::~Robo_CEO()
+            {
+
+            }
+
+            void Robo_CEO::anti_gravidade(sf::Vector2f* pos)
+            {
+                this->vel_grav = 0;
+            }
+
+            void Robo_CEO::setJogador(Jogador* j)
+            {
+                this->pJogador = j;
+            }
+
+            void Robo_CEO::mover()
+            {
+                movimento = sf::Vector2f(0.0f, 0.0f);
+                float dt = Ente::g_dt;
+
+                Entidade::gravidade(&this->movimento);
+
+                this->x += movimento.x * dt * velocidade;
+                this->y += movimento.y * dt * velocidade;
+
+                setPosicaoGrafica(this->x, this->y);
+            }
+
+            void Robo_CEO::atirar()
+            {
+                if (cooldownTiro > 0)
+                {
+                    cooldownTiro--;
+                    return;
+                }
+                cooldownTiro = COOLDOWN_TIRO_CHEFE_FRAMES;
+                if (pJogador == nullptr)
+                    return;
+
+                Entidades::Projetil* p = new Entidades::Projetil();
+                p->setGerenciadorGrafico(Ente::getGerenciadorGrafico());
+
+                sf::FloatRect corpoChefe = pFigura->getGlobalBounds();
+                float CentroX = corpoChefe.left + corpoChefe.width / 2.0f;
+                float CentroY = corpoChefe.top + corpoChefe.height / 2.0f;
+
+                float dx = pJogador->getX() - CentroX;
+                float dy = pJogador->getY() - CentroY;
+
+                float mag = std::sqrt(dx * dx + dy * dy);
+                float dirX = 0.0f;
+                float dirY = 0.0f;
+
+                if (mag > 0.0f)
+                {
+                    dirX = dx / mag;
+                    dirY = dy / mag;
+                }
+
+                float vx = dirX * PROJETIL_VELOCIDADE_CHEFE;
+                float vy = dirY * PROJETIL_VELOCIDADE_CHEFE;
+                p->setVelocidade(vx, vy);
+                p->setX(CentroX - 32);
+                p->setY(CentroY);
+
+                p->setIdDono(0);
+                projeteis.inserir(p);
+            }
+
+            void Robo_CEO::danificar(Jogador* pJogador)
+            {
+                if (pJogador)
+                {
+                    for (int i = 0; i < this->nivel_maldade; i++)
+                        pJogador->operator--();
+                }
+            }
+
+            void Robo_CEO::salvar()
+            {
+
+            }
+
+            json Robo_CEO::salvarDataBuffer() const
+            {
+                json j = Inimigo::salvarDataBuffer();
+                j["tipo"] = "Robo_CEO";
+                j["forca"] = this->forca;
+                j["cooldownTiro"] = this->cooldownTiro;
+                return j;
+            }
+
+            void Robo_CEO::carregarDeBuffer(const json& data)
+            {
+                Inimigo::carregarDeBuffer(data);
+
+                this->forca = data.value("forca", this->forca);
+                this->cooldownTiro = data.value("cooldownTiro", this->cooldownTiro);
+                PROJETIL_VELOCIDADE_CHEFE = 1.2f + 0.06f * (float)forca;
+
+                if (pGG)
+                {
+                    sf::Texture* tex = pGG->getTextura("Imagens/chefe.png");
+                    if (tex)
+                    {
+                        pFigura->setTexture(*tex);
+                        pFigura->setScale(64.0f / tex->getSize().x, 64.0f / tex->getSize().y);
+                    }
+                }
+            }
+
+            void Robo_CEO::executar()
+            {
+                this->mover();
+                this->atirar();
+                this->projeteis.executar();
+                atualizarBarraVida();
+            }
+
+            Listas::ListaEntidades* Robo_CEO::getProjeteis()
+            {
+                return &projeteis;
             }
         }
-        else
-        {
-            std::cerr << "Erro RoboCEO" << std::endl;
-        }
-
-        pFigura->setPosition(this->x, this->y);
-        atualizarBarraVida(); // inicializa a barra
-    }
-
-    Robo_CEO::~Robo_CEO()
-    {
-
-    }
-
-   void Robo_CEO::anti_gravitar(sf::Vector2f* pos)
-   {
-	   vel_grav -= 0.0249f;
-	   *pos += sf::Vector2f(0.0f, vel_grav);
-   }
-
-    void Robo_CEO::setJogador(Jogador* j)
-    {
-        this->pJogador = j;
-    }
-
-    void Robo_CEO::mover()
-    {
-        sf::Vector2f movimento = sf::Vector2f(0.0f, 0.0f);
-        tempo = clock.restart();
-
-        Entidade::gravitar(&this->movimento);
-        Entidade::anti_gravitar(&this->movimento);
-        this->x += movimento.x * tempo.asSeconds() * velocidade;
-        this->y += movimento.y * tempo.asSeconds() * velocidade;
-
-        setPosicaoGrafica(this->x, this->y);
-    }
-
-    void Robo_CEO::atirar()
-    {
-        if (cooldownTiro > 0)
-        {
-            cooldownTiro--;
-            return;
-        }
-        if (pJogador == nullptr)
-        {
-            return;
-        }
-
-        cooldownTiro = COOLDOWN_TIRO_CHEFE;
-
-        Entidades::Projetil* p = new Entidades::Projetil();
-        p->setGerenciadorGrafico(Ente::getGerenciadorGrafico());
-
-        float centroX = this->x + (60.0f / 2.0f) - (10.0f / 2.0f);
-        float centroY = this->y + (60.0f / 2.0f) - (10.0f / 2.0f);
-        p->setX(centroX);
-        p->setY(centroY);
-
-        float dx = pJogador->getX() - this->x;
-        float dy = pJogador->getY() - this->y;
-        float mag = std::sqrt(dx * dx + dy * dy);
-
-        float vx = 0.0f;
-        float vy = 0.0f;
-
-        if (mag > 0.0f)
-        {
-            vx = (dx / mag) * PROJETIL_VELOCIDADE_CHEFE;
-            vy = (dy / mag) * PROJETIL_VELOCIDADE_CHEFE;
-        }
-
-        p->setVelocidade(vx, vy);
-
-        p->setIdDono(0);
-
-        projeteis.inserir(p);
-    }
-
-    void Robo_CEO::danificar(Jogador* pJogador)
-    {
-        if (pJogador)
-        {
-            for (int i = 0; i < this->nivel_maldade; i++)
-                pJogador->operator--();
-        }
-    }
-
-    void Robo_CEO::salvar()
-    {
-    }
-
-    void Robo_CEO::executar()
-    {
-        this->mover();
-        this->atirar();
-        this->projeteis.executar();
-        atualizarBarraVida();
-    }
-
-    ListaEntidades* Robo_CEO::getProjeteis()
-    {
-        return &projeteis;
     }
 }

@@ -1,63 +1,91 @@
+#include "Jogador.h"
 #include "Choquinho.h"
+using namespace CyberMetro::Entidades::Personagens;
+namespace CyberMetro {
+	namespace Entidades {
+		namespace Obstaculos {
 
-using namespace Personagens;
-
-namespace Obstaculos {
-
-	Choquinho::Choquinho(float xi, float yi) : Obstaculo(xi, yi)
-	{
-
-		danosidade = (rand() % 2) + 1;
-
-		if (pGG)
-		{
-			sf::Texture* tex = pGG->getTextura("Imagens/obstaculo_dificil.png");
-			if (tex)
+			Choquinho::Choquinho(float xi, float yi) : Obstaculo(xi, yi)
 			{
-				pFigura->setTexture(*tex);
-				pFigura->setScale(32.0f / tex->getSize().x, 32.0f / tex->getSize().y);
+
+				danosidade = (rand() % 2) + 1;
+
+				if (pGG)
+				{
+					sf::Texture* tex = pGG->getTextura("Imagens/obstaculo_dificil.png");
+					if (tex)
+					{
+						pFigura->setTexture(*tex);
+						pFigura->setScale(32.0f / tex->getSize().x, 32.0f / tex->getSize().y);
+					}
+				}
+				else
+				{
+					std::cerr << "Erro Choquinho" << std::endl;
+				}
+
+
+				this->x = xi;
+				this->y = yi;
+				setPosicaoGrafica(this->x, this->y);
+
+				this->danoso = true;
 			}
-		}
-		else
-		{
-			std::cerr << "Erro Choquinho" << std::endl;
-		}
 
+			Choquinho::~Choquinho()
+			{
 
-		this->x = xi;
-		this->y = yi;
-		setPosicaoGrafica(this->x, this->y);
-
-		this->danoso = true;
-	}
-
-	Choquinho::~Choquinho()
-	{
-
-	}
-
-	void Choquinho::obstaculizar(Jogador* pj)
-	{
-		if (pj && pj->getObstaculoCooldown() <= sf::Time::Zero)
-		{
-			for (int i = 0; i < danosidade; i++) {
-				pj->operator--();
 			}
-			pj->trava_mov(1.0f /(float) danosidade); 
 
-			pj->iniciarObstaculoCooldown(sf::seconds(1.0f));
+			void Choquinho::obstaculizar(Jogador* pj)
+			{
+				if (pj && pj->getObstaculoCooldown() <= sf::Time::Zero)
+				{
+					for (int i = 0; i < danosidade; i++) {
+						pj->operator--();
+					}
+					pj->trava_mov(1.0f / (float)danosidade); // stun, quanto maior o dano menor o stunt
+
+					pj->iniciarObstaculoCooldown(sf::seconds(1.0f));// cooldown
+				}
+			}
+
+			void Choquinho::salvar()
+			{
+			}
+
+			json Choquinho::salvarDataBuffer() const
+			{
+				json j = Obstaculo::salvarDataBuffer();
+				j["tipo"] = "Choquinho";
+				j["danosidade"] = this->danosidade;
+				return j;
+			}
+
+			void Choquinho::carregarDeBuffer(const json& data)
+			{
+				Obstaculo::carregarDeBuffer(data);
+
+				this->danosidade = data.value("danosidade", this->danosidade);
+
+				if (pGG)
+				{
+					sf::Texture* tex = pGG->getTextura("Imagens/obstaculo_dificil.png");
+					if (tex)
+					{
+						pFigura->setTexture(*tex);
+						pFigura->setScale(32.0f / tex->getSize().x, 32.0f / tex->getSize().y);
+					}
+				}
+			}
+
+			void Choquinho::executar()
+			{
+				vel_grav += grav;
+				this->y += vel_grav;
+				setPosicaoGrafica(this->x, this->y);
+			}
+
 		}
-	}
-
-	void Choquinho::salvar() 
-	{
-	
-	}
-
-	void Choquinho::executar()
-	{
-		vel_grav += grav;
-		this->y += vel_grav;
-		setPosicaoGrafica(this->x, this->y);
 	}
 }

@@ -21,47 +21,53 @@
 #define MUNDO_X_MAX 3200
 #define MUNDO_Y_MIN 0
 #define MUNDO_Y_MAX 900
+namespace CyberMetro {
 
-class Ente;
+    class Ente;
+    namespace Entidades
+    {
+        namespace Personagens
+        {
+            class Jogador;
+            class Personagem;
+        }
 
-namespace Personagens
-{
-    class Jogador;
-    class Personagem;
+    }
+    namespace Gerenciadores {
+        class Gerenciador_Grafico
+        {
+        private:
+            sf::RenderWindow* janela;
+            sf::VideoMode videoMode;
+            sf::Event ev;
+            sf::RectangleShape rect;
+            sf::CircleShape cir;
+            sf::View camera;
+
+            std::unordered_map<std::string, sf::Texture> texturas;
+
+            sf::Texture texturaBackground;
+            sf::Sprite spriteBackground;
+
+            void iniciaJanela();
+
+
+        public:
+            Gerenciador_Grafico();
+            ~Gerenciador_Grafico();
+
+            sf::Texture* getTextura(std::string caminho);
+
+            void desenharBackground();
+
+            void desenharEnte(const Ente* pe);
+            void update();
+            void render();
+            void clear();
+            void setCamera(Entidades::Personagens::Jogador* pJog);
+
+            const bool getJanelaOpen() const;
+            sf::RenderWindow* getJanela() const;
+        };
+    }
 }
-
-class Gerenciador_Grafico
-{
-private:
-    sf::RenderWindow* janela;
-    sf::VideoMode videoMode;
-    sf::Event ev;
-    sf::RectangleShape rect;
-    sf::CircleShape cir;
-    sf::View camera;
-
-    std::unordered_map<std::string, sf::Texture> texturas;
-
-    sf::Texture texturaBackground;
-    sf::Sprite spriteBackground;
-
-    void iniciaJanela();
-
-
-public:
-    Gerenciador_Grafico();
-    ~Gerenciador_Grafico();
-
-    sf::Texture* getTextura(std::string caminho);
-
-    void desenharBackground();
-
-    void desenharEnte(const Ente* pe);
-    void update();
-    void render();
-    void clear();
-    void setCamera(Personagens::Jogador* pJog);
-
-    const bool getJanelaOpen() const;
-    sf::RenderWindow* getJanela() const;
-};

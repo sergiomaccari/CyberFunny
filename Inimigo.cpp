@@ -1,27 +1,32 @@
 #include "Inimigo.h"
+namespace CyberMetro {
+	namespace Entidades {
+		namespace Personagens
+		{
+			Inimigo::Inimigo(float xi, float yi) :
+				pontosPorMorte(0)
+			{
+
+				nivel_maldade = rand() % 5 + 1;
+			}
 
 
-namespace Personagens
-{
-	Inimigo::Inimigo(float xi, float yi) :
-		pontosPorMorte(0)
-	{
-
-		nivel_maldade = rand() % 5 + 1;
-	}
+			Inimigo::~Inimigo()
+			{
+				nivel_maldade = 0;
+			}
 
 
-	Inimigo::~Inimigo()
-	{
-		nivel_maldade = 0;
-	}
+			void Inimigo::executar() 
+			{
+			
+			}
 
 
-	void Inimigo::executar() {}
-
-
-	int Inimigo::getPontosPorMorte() const
-	{
-		return pontosPorMorte;
+			int Inimigo::getPontosPorMorte() const
+			{
+				return pontosPorMorte;
+			}
+		}
 	}
 }

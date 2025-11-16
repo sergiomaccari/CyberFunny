@@ -3,21 +3,35 @@
 #include <stdlib.h>
 #include <time.h>
 
-class Ente
-{
-protected:
-    int id;
-    static Gerenciador_Grafico* pGG;
-    sf::Sprite* pFigura;
+namespace CyberMetro {
+    namespace Gerenciadores {
+        class Gerenciador_Grafico;
+    }
 
-public:
-    Ente();
-    virtual ~Ente();
+    class Ente
+    {
+    protected:
+        int id;
+        static Gerenciadores::Gerenciador_Grafico* pGG;
+        sf::Sprite* pFigura;
 
-    virtual void executar() = 0;
-    int getId() const;
-    static void setGerenciadorGrafico(Gerenciador_Grafico* g);
-    static Gerenciador_Grafico* getGerenciadorGrafico();
-    void desenhar();
-    sf::Sprite* getFigura() const;
-};
+        static sf::Clock g_clock;
+        static float g_dt;
+        static float g_tempoTotal;
+        static const float MAX_DELTA_TIME;
+    public:
+        Ente();
+        virtual ~Ente();
+
+        virtual void executar() = 0;
+        int getId() const;
+        void desenhar();
+        sf::Sprite* getFigura() const;
+
+        static void setGerenciadorGrafico(Gerenciadores::Gerenciador_Grafico* g);
+        static Gerenciadores::Gerenciador_Grafico* getGerenciadorGrafico();
+
+        static void atualizarClockGlobal(bool pausado);
+
+    };
+}

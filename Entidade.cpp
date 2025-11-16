@@ -1,93 +1,108 @@
 #include "Entidade.h"
-
-namespace Entidades
-{
-    const float Entidade::grav = 0.025f;
-
-    Entidade::Entidade(float xi, float yi) : x(xi), y(yi), estaAtivo(true), vel_grav(0)
+namespace CyberMetro {
+    namespace Entidades
     {
+        const float Entidade::grav = 0.025f;
 
-    }
-
-    Entidade::Entidade() : estaAtivo(true), vel_grav(0)
-    {
-    
-    }
-    Entidade::~Entidade()
-    {
-
-    }
-
-    void Entidade::setPosicaoGrafica(float xi, float yi)
-    {
-        if (pFigura)
+        Entidade::Entidade(float xi, float yi) : x(xi), y(yi), estaAtivo(true), vel_grav(0)
         {
-            this->pFigura->setPosition(xi, yi);
-        }
-    }
 
-    sf::Vector2f Entidade::getPosicaoGrafica()
-    {
-        if (pFigura)
+        }
+
+        Entidade::Entidade() : x(0.f), y(0.f), estaAtivo(true), vel_grav(0)
         {
-            return this->pFigura->getPosition();
+
         }
-        return sf::Vector2f(0.f, 0.f);
-    }
+        Entidade::~Entidade()
+        {
 
-    void Entidade::setX(float novoX)
-    {
-        x = novoX;
-    }
+        }
 
-    void Entidade::setY(float novoY)
-    {
-        y = novoY;
-    }
+        void Entidade::setPosicaoGrafica(float xi, float yi)
+        {
+            if (pFigura)
+            {
+                this->pFigura->setPosition(xi, yi);
+            }
+        }
 
-    float Entidade::getX() const
-    {
-        return x;
-    }
+        sf::Vector2f Entidade::getPosicaoGrafica()
+        {
+            if (pFigura)
+            {
+                return this->pFigura->getPosition();
+            }
+            return sf::Vector2f(0.f, 0.f);
+        }
 
-    float Entidade::getY() const
-    {
-        return y;
-    }
+        void Entidade::setX(float novoX)
+        {
+            x = novoX;
+        }
 
-    void Entidade::setAtivo(bool b)
-    {
-        estaAtivo = b;
-    }
+        void Entidade::setY(float novoY)
+        {
+            y = novoY;
+        }
 
-    bool Entidade::getAtivo() const
-    {
-        return estaAtivo;
-    }
+        float Entidade::getX() const
+        {
+            return x;
+        }
 
-    void Entidade::setVel_Grav(float nv)
-    {
-        vel_grav = nv;
-    }
+        float Entidade::getY() const
+        {
+            return y;
+        }
 
-    float Entidade::getVel_Grav() const
-    {
-        return vel_grav;
-    }
+        void Entidade::setAtivo(bool b)
+        {
+            estaAtivo = b;
+        }
 
-    void Entidade::gravitar(sf::Vector2f* pos)
-    {
-        vel_grav += grav;
-        *pos += sf::Vector2f(0.0f, vel_grav);
-    }
+        bool Entidade::getAtivo() const
+        {
+            return estaAtivo;
+        }
 
-    void Entidade::anti_gravitar(sf::Vector2f* pos)
-    {
+        void Entidade::setVel_Grav(float nv)
+        {
+            vel_grav = nv;
+        }
 
-    }
+        float Entidade::getVel_Grav() const
+        {
+            return vel_grav;
+        }
 
-    void Entidade::setPosicaoGrafica(const sf::Vector2f& novaPos)
-    {
-        this->setPosicaoGrafica(novaPos.x, novaPos.y);
+        void Entidade::gravidade(sf::Vector2f* pos)
+        {
+            vel_grav += grav;
+            *pos += sf::Vector2f(0.0f, vel_grav);
+        }
+
+        void Entidade::setPosicaoGrafica(const sf::Vector2f& novaPos)
+        {
+            this->setPosicaoGrafica(novaPos.x, novaPos.y);
+        }
+
+        json Entidade::salvarDataBuffer() const
+        {
+            json j;
+            j["x"] = this->x;
+            j["y"] = this->y;
+            j["estaAtivo"] = this->estaAtivo;
+            j["vel_grav"] = this->vel_grav;
+            return j;
+        }
+
+        void Entidade::carregarDeBuffer(const json& data)
+        {
+            this->x = data.value("x", this->x);
+            this->y = data.value("y", this->y);
+            this->estaAtivo = data.value("estaAtivo", this->estaAtivo);
+            this->vel_grav = data.value("vel_grav", this->vel_grav);
+            setPosicaoGrafica(this->x, this->y);
+        }
     }
 }

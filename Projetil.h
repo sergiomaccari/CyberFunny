@@ -1,30 +1,34 @@
 #pragma once
 #include "Entidade.h"
-
-
-namespace Entidades
-{
-    class Projetil : public Entidades::Entidade
+#include <nlohmann/json.hpp>
+namespace CyberMetro {
+    namespace Entidades
     {
-    private:
-        int dano;
-        float vx;
-        float vy;
-        int idDono;// 0 =roboceo 1=jog1 2=jog2
+        using json = nlohmann::json;
 
-        const float FORCA_GRAVIDADE_PROJETIL;
+        class Projetil : public Entidades::Entidade
+        {
+        private:
+            int dano;
+            float vx;
+            float vy;
+            int idDono;// 0 =roboceo 1=jog1 2=jog2
 
-    public:
-        Projetil();
-        ~Projetil();
-        virtual void executar();
-        virtual void salvar();
-        void setVelocidade(float velX, float velY);
+            const float FORCA_GRAVIDADE_PROJETIL;
 
-        
-        void setIdDono(int id);
-        int getIdDono() const;
+        public:
+            Projetil();
+            ~Projetil();
+            virtual void executar();
+            virtual void salvar();
 
-        int getDano() const;
-    };
+            virtual json salvarDataBuffer() const;
+            virtual void carregarDeBuffer(const json& data);
+
+            void setVelocidade(float velX, float velY);
+            void setIdDono(int id);
+            int getIdDono() const;
+            int getDano() const;
+        };
+    }
 }

@@ -1,6 +1,6 @@
 #include "Jogo.h"
 #include <iostream>
-
+using namespace CyberMetro;
 int main()
 {
 	srand(time(NULL));
